@@ -57,7 +57,46 @@ const registerUser = async (req , res ) => {
     }
 }
 
+// Api for user Login
+const loginUser = async (req, res) => {
 
+    try {
+
+        const {phone, password} = req.body
+
+        if(!phone || !password) {
+            return res.json({success: false, message: "Missing phone or password"})
+        }
+
+        // find user by phone
+        const [rows] = await db.execute(
+            "SELECT * FROM users WHERE phone = ?",
+            [phone]
+        )
+
+        const user = rows[0];
+
+        if(!user) {
+            return res.json({success: false, message: "User does not exist"})
+        }
+
+        //compare password
+        const isMatch = await bcrypt.compare(password, user.password_hash)
+
+        if(!isMatch) {
+            res.json({success: false, message: "Invalid credentials"})
+        }
+
+        //create jwt token
+        const token = jwt.sign({id:user.id, role:user.role}, process.env.JWT_SECRET, {expiresIn: "7d"})
+
+        res.json({success: true, token})
+
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+}
 
 
 
@@ -65,5 +104,6 @@ const registerUser = async (req , res ) => {
 
 
 export {
-    registerUser
+    registerUser,
+    loginUser
 }
