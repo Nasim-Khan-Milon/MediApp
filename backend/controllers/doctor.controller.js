@@ -10,9 +10,13 @@ const loginDoctor = async (req, res) => {
 
         const {email, password} = req.body
 
-        if(!email || !password) {
-            return res.json({success: false, message: "Missing phone or password"})
-        }
+        // if(email === process.env.DOCTOR_EMAIL && password === process.env.DOCTOR_PASSWORD) {
+            
+        //     const dToken  = jwt.sign({email,password}, process.env.JWT_SECRET, { expiresIn: '1d' })
+        //     res.json({success: true, dToken })
+        // } else {
+        //     return res.json({success: false, message: "Missing phone or password"})
+        // }
 
         // find doctor by email
         const [rows] = await db.execute(
@@ -34,9 +38,9 @@ const loginDoctor = async (req, res) => {
         }
 
         //create jwt token
-        const token = jwt.sign({id:doctor.id, type: "doctor"}, process.env.JWT_SECRET, {expiresIn: "7d"})
+        const dToken = jwt.sign({id:doctor.id, type: "doctor"}, process.env.JWT_SECRET, {expiresIn: "7d"})
 
-        res.json({success: true, token})
+        res.json({success: true, dToken})
 
     } catch (error) {
         console.error(error);
