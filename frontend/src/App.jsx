@@ -31,8 +31,8 @@ function App() {
   const location = useLocation()
   const path = location.pathname
 
-  const showUserLayout = path.startsWith('/user') && token
-  const showDoctorLayout = path.startsWith('/doctor') && dToken
+  const showUserLayout = path.startsWith('/user')
+  const showDoctorLayout = path.startsWith('/doctor')
 
 
   return (
@@ -50,15 +50,15 @@ function App() {
         <Route path='/login' element={<Login />} />
 
         {/* User Routes */}
-        {token && (
-          <>
+        {/* {token && (
+          <> */}
             <Route path='/user/home' element={<Home />} />
             <Route path='/user/my-profile' element={<MyProfile />} />
             <Route path='/user/my-appointments' element={<MyAppointments />} />
             <Route path='/user/contact' element={<Contact />} />
             <Route path='/user/about' element={<About />} />
-          </>
-        )}
+          {/* </>
+        )} */}
 
         {/* Doctor Routes */}
         {dToken && (
