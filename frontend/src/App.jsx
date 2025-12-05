@@ -22,6 +22,7 @@ import DoctorDashboard from './pages/Doctor/DoctorDashboard'
 import DoctorAppointments from './pages/Doctor/DoctorAppointments'
 import DoctorPatient from './pages/Doctor/DoctorPatient'
 import DoctorProfile from './pages/Doctor/DoctorProfile'
+import Footer from './components/Footer'
 
 function App() {
 
@@ -71,6 +72,7 @@ function App() {
         )}
 
       </Routes>
+      {showUserLayout && <Footer />}
     </div>
   )
 }
