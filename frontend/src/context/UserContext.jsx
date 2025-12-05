@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import { createContext, useState } from "react";
 import { toast } from "react-toastify";
 import axios from 'axios'
@@ -28,7 +30,7 @@ const UserContextProvider = (props) => {
 
         } catch (error) {
             console.log(error)
-            toast.error(data.message)
+            toast.error(error.message)
         }
     }
 
@@ -49,7 +51,7 @@ const UserContextProvider = (props) => {
 
         } catch (error) {
             console.log(error)
-            toast.error(data.message)
+            toast.error(error.message)
         }
     }
 

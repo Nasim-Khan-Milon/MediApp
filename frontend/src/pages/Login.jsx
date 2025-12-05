@@ -1,7 +1,9 @@
-import React, { useContext, useState } from 'react'
+
+import React, { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../context/UserContext'
 import { DoctorContext } from '../context/DoctorContext'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
 
@@ -15,18 +17,24 @@ const Login = () => {
     const { token, setToken, loginUser, registerUser } = useContext(UserContext)
     const { dToken, setDToken, loginDoctor } = useContext(DoctorContext)
 
+    const navigate = useNavigate()
+
+
     const onSubmitHandler = async (event) => {
 
         event.preventDefault()
 
         try {
 
-            if(state === 'Sign Up' && role === 'User') {
+            if (state === 'Sign Up' && role === 'User') {
                 registerUser(name, phone, password)
-            } else if(state === 'Login' && role === 'User') {
+                navigate('/login')
+            } else if (state === 'Login' && role === 'User') {
                 loginUser(phone, password)
-            } else if(state === 'Login' && role === 'Doctor') {
+                navigate('/user/home')
+            } else if (state === 'Login' && role === 'Doctor') {
                 loginDoctor(email, password)
+                navigate('/doctor/dashboard')
             } else {
                 toast.error("Something went wrong!")
             }
@@ -36,6 +44,18 @@ const Login = () => {
             toast.error(error.message)
         }
     }
+
+    // useEffect(() => {
+    //     if(token) {
+    //         navigate('/')
+    //     }
+    // }, [token])
+
+    // useEffect(() => {
+    //     if(dToken) {
+    //         navigate('/doctor-dashboard')
+    //     }
+    // }, [dToken])
 
     return (
         <form onSubmit={onSubmitHandler} className='min-h-[80vh] flex items-center'>
@@ -72,26 +92,26 @@ const Login = () => {
                         <button type='submit' className='bg-primary text-white w-full py-2 rounded-md text-base'>Sign Up</button>
                     )
                 }
-                
+
 
                 {
                     state === 'Login' ? (
                         role === 'Doctor' ? (
-                            <p>Patient Login <span onClick={() => {setRole('User'); setState('Login');}} className='text-primary underline cursor-pointer'>Click Here</span></p>
+                            <p>Patient Login <span onClick={() => { setRole('User'); setState('Login'); }} className='text-primary underline cursor-pointer'>Click Here</span></p>
                         ) : (
                             <>
                                 <p>
-                                    Doctor Login <span onClick={() => {setRole('Doctor'); setState('Login');}} className='text-primary underline cursor-pointer'>Click Here</span>
+                                    Doctor Login <span onClick={() => { setRole('Doctor'); setState('Login'); }} className='text-primary underline cursor-pointer'>Click Here</span>
                                 </p>
                                 <p>
-                                    Create an new account? <span onClick={() => {setState('Sign Up'); setRole('User');}} className='text-primary underline cursor-pointer'>Click Here</span>
+                                    Create an new account? <span onClick={() => { setState('Sign Up'); setRole('User'); }} className='text-primary underline cursor-pointer'>Click Here</span>
                                 </p>
                             </>
 
                         )
                     ) : (
                         <p>
-                            Already have an account? <span onClick={() => {setState('Login'); setRole('User');}} className='text-primary underline cursor-pointer'>Login Here</span>
+                            Already have an account? <span onClick={() => { setState('Login'); setRole('User'); }} className='text-primary underline cursor-pointer'>Login Here</span>
                         </p>
                     )
                 }

@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import { createContext, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -28,13 +30,14 @@ const DoctorContextProvider = (props) => {
 
         } catch (error) {
             console.log(error)
-            toast.error(data.message)
+            toast.error(error.message)
         }
     }
 
 
     const value = {
         backendUrl,
+        dToken, setDToken,
         loginDoctor
     }
 

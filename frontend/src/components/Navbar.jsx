@@ -1,11 +1,11 @@
 import React from 'react'
 
-const DoctorProfile = () => {
+const Navbar = () => {
   return (
     <div>
-      
+      <p>Navbar</p>
     </div>
   )
 }
 
-export default DoctorProfile
+export default Navbar
