@@ -1,10 +1,9 @@
 import React from 'react'
+import { assets } from '../../assets/assets_frontend/assets'
 
 const Home = () => {
   return (
-    <div>
-      <p>Patient Home</p>
-    </div>
+    <div></div>
   )
 }
 
