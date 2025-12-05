@@ -4,6 +4,7 @@ import 'dotenv/config'
 import db from './config/db.js'
 import connectCloudinary from './config/cloudinary.js'
 import userRouter from './routes/user.route.js'
+import doctorRouter from './routes/doctor.route.js'
 
 //app config
 const app = express()
@@ -16,6 +17,7 @@ app.use(cors())
 
 //api endpoints
 app.use('/api/user', userRouter)
+app.use('/api/doctor', doctorRouter)
 
 
 app.get('/', (req, res) => {
