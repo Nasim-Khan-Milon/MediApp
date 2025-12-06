@@ -2,10 +2,14 @@ import React, { useContext, useEffect, useState } from 'react'
 import { DoctorContext } from '../context/DoctorContext'
 import { UserContext } from '../context/UserContext'
 import { doctors } from '../assets/assets_frontend/assets'
+import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const AppointmentSlots = () => {
 
-    const { token } = useContext(UserContext)
+    const { token, backendUrl } = useContext(UserContext)
+    const navigate = useNavigate()
 
     const daysofWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
@@ -52,6 +56,44 @@ const AppointmentSlots = () => {
         setDocSlots(slots); // update state only once after loop
     };
 
+    const bookAppointment = async () => {
+
+        if (!token) {
+            toast.warn("Please Login to book appointment")
+            return navigate('/login')
+        }
+
+        try {
+
+            // take the selected day
+            const date = docSlots[slotIndex][0].datetime;
+
+            let day = date.getDate();
+            let month = date.getMonth() + 1;
+            let year = date.getFullYear();
+
+            const slotDate = `${year}-${month}-${day}`;
+            // console.log("slotDate =", slotDate);
+
+            const { data } = await axios.post(
+                backendUrl + "/api/user/book-appointment",
+                {slotDate, slotTime },
+                { headers: { token } }
+            );
+
+            if (data.success) {
+                toast.success(data.message);
+                navigate("/user/my-appointments");
+            } else {
+                toast.error(data.message);
+            }
+
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
+
     useEffect(() => {
         getAvailableSlots();
     }, [])
@@ -77,12 +119,12 @@ const AppointmentSlots = () => {
                     ))}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 w-full overflow-x-auto flex-nowrap whitespace-nowrap mt-4">
+            <div className="flex flex-wrap items-center gap-3 w-full overflow-x-auto  whitespace-nowrap mt-4">
                 {docSlots[slotIndex]?.map((item, index) => (
                     <p
                         onClick={() => setSlotTime(item.time)}
                         key={index}
-                        className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer ${item.time === slotTime
+                        className={`text-sm font-light shrink-0 px-5 py-2 rounded-full cursor-pointer ${item.time === slotTime
                             ? "bg-primary text-white"
                             : "text-gray-400 border border-gray-300"
                             }`}
@@ -93,7 +135,7 @@ const AppointmentSlots = () => {
             </div>
 
             <button
-
+                onClick={bookAppointment}
                 className="bg-primary text-white text-sm font-light px-20 py-3 rounded-full my-6"
             >
                 Book an appointment

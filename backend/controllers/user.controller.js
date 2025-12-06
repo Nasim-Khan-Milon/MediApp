@@ -98,12 +98,60 @@ const loginUser = async (req, res) => {
     }
 }
 
+function convertTo24Hour(time) {
+    const [timePart, ampm] = time.split(" ");
+    let [hour, minute] = timePart.split(":");
 
+    hour = parseInt(hour);
+
+    if (ampm === "PM" && hour !== 12) hour += 12;
+    if (ampm === "AM" && hour === 12) hour = 0;
+
+    return `${hour.toString().padStart(2, '0')}:${minute}:00`;
+}
+
+
+// API to book appointment
+const bookAppointment = async (req , res ) => {
+
+    try {
+
+        const userId = req.user.userId
+        const { slotDate, slotTime } = req.body
+
+        const time24 = convertTo24Hour(slotTime);
+
+        if(!slotDate || !slotTime) {
+            return res.json({success:false, message: "Missing date or time"})
+        }
+
+        const [results] = await db.execute(
+            "SELECT * FROM appointments WHERE patient_id = ? AND slot_date = ? AND slot_time = ?",
+            [userId, slotDate, time24]
+        )
+
+        if(results.length > 0) {
+            return res.json({success: false, message: "Already booked this appointment"})
+        }
+
+        const [result] = await db.execute(
+            "INSERT INTO appointments (patient_id, slot_date, slot_time) VALUES (?, ?, ?)",
+            [userId, slotDate, time24]
+        )
+        
+        res.json({success: true, message: "Appointment booked successfully"})
+
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+}
 
 
 
 
 export {
     registerUser,
-    loginUser
+    loginUser,
+    bookAppointment
 }
