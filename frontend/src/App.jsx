@@ -21,6 +21,7 @@ import MyProfile from './pages/User/MyProfile'
 
 import DoctorDashboard from './pages/Doctor/DoctorDashboard'
 import DoctorAppointments from './pages/Doctor/DoctorAppointments'
+import DoctorAvailability from './pages/Doctor/DoctorAvailability'
 import DoctorPatient from './pages/Doctor/DoctorPatient'
 import DoctorProfile from './pages/Doctor/DoctorProfile'
 import Footer from './components/Footer'
@@ -65,6 +66,7 @@ function App() {
             dToken && <>
               <Route path='/doctor/dashboard' element={<DoctorDashboard />} />
               <Route path='/doctor/appointments' element={<DoctorAppointments />} />
+              <Route path='/doctor/availability' element={<DoctorAvailability />} />
               <Route path='/doctor/patient' element={<DoctorPatient />} />
               <Route path='/doctor/profile' element={<DoctorProfile />} />
             </>
