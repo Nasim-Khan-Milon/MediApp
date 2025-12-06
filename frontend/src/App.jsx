@@ -7,6 +7,7 @@ import { UserContext } from './context/UserContext'
 import { DoctorContext } from './context/DoctorContext'
 
 import Navbar from './components/Navbar'
+import DoctorNavbar from './components/DoctorNavbar'
 import Sidebar from './components/Sidebar'
 
 // Pages
@@ -42,36 +43,36 @@ function App() {
 
       {/* Layouts */}
       {showUserLayout && <Navbar />}
-      {showDoctorLayout && <Sidebar />}
+      {showDoctorLayout && dToken && <DoctorNavbar />}
 
-      {/* ALL ROUTES IN ONE PLACE */}
-      <Routes>
+      <div className='flex items-start'>
+        {showDoctorLayout && dToken && <Sidebar />}
+        {/* ALL ROUTES IN ONE PLACE */}
+        <Routes>
+          {/* Public */}
+          <Route path='/login' element={<Login />} />
 
-        {/* Public */}
-        <Route path='/login' element={<Login />} />
+          {/* User Routes */}
+          <Route path='/user/home' element={<Home />} />
+          <Route path='/user/my-profile' element={<MyProfile />} />
+          <Route path='/user/my-appointments' element={<MyAppointments />} />
+          <Route path='/user/contact' element={<Contact />} />
+          <Route path='/user/about' element={<About />} />
 
-        {/* User Routes */}
-        {/* {token && (
-          <> */}
-            <Route path='/user/home' element={<Home />} />
-            <Route path='/user/my-profile' element={<MyProfile />} />
-            <Route path='/user/my-appointments' element={<MyAppointments />} />
-            <Route path='/user/contact' element={<Contact />} />
-            <Route path='/user/about' element={<About />} />
-          {/* </>
-        )} */}
 
-        {/* Doctor Routes */}
-        {dToken && (
-          <>
-            <Route path='/doctor/dashboard' element={<DoctorDashboard />} />
-            <Route path='/doctor/appointments' element={<DoctorAppointments />} />
-            <Route path='/doctor/patient' element={<DoctorPatient />} />
-            <Route path='/doctor/profile' element={<DoctorProfile />} />
-          </>
-        )}
+          {/* Doctor Routes */}
+          {
+            dToken && <>
+              <Route path='/doctor/dashboard' element={<DoctorDashboard />} />
+              <Route path='/doctor/appointments' element={<DoctorAppointments />} />
+              <Route path='/doctor/patient' element={<DoctorPatient />} />
+              <Route path='/doctor/profile' element={<DoctorProfile />} />
+            </>
+          }
 
-      </Routes>
+
+        </Routes>
+      </div>
       {showUserLayout && <Footer />}
     </div>
   )
