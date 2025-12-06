@@ -39,14 +39,14 @@ function App() {
 
 
   return (
-    <div className='bg-[#F8F9FD] min-h-screen'>
+    <div className='bg-[#F8F9FD]'>
       <ToastContainer />
 
       {/* Layouts */}
       {showUserLayout && <Navbar />}
       {showDoctorLayout && dToken && <DoctorNavbar />}
 
-      <div className='flex items-start'>
+      <div className='flex items-center justify-center'>
         {showDoctorLayout && dToken && <Sidebar />}
         {/* ALL ROUTES IN ONE PLACE */}
         <Routes>

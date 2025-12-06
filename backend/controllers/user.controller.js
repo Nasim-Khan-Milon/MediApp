@@ -4,25 +4,25 @@ import jwt from 'jsonwebtoken'
 
 
 // API to register a new user
-const registerUser = async (req , res ) => {
+const registerUser = async (req, res) => {
 
     try {
 
         const { name, password, phone } = req.body
 
         //check for missing fields
-        if(!name || !password || !phone) {
-            return res.json({success: false, message:"Missing Details"})
+        if (!name || !password || !phone) {
+            return res.json({ success: false, message: "Missing Details" })
         }
 
         //Validate phone number
-        if(phone.length != 11) {
-            return res.json({success: false, message:"Enter a valid phone number"})
+        if (phone.length != 11) {
+            return res.json({ success: false, message: "Enter a valid phone number" })
         }
 
         // validate password
-        if(password.length < 8) {
-            return res.json({success: false, message:"Password must be at least 8 characters"})
+        if (password.length < 8) {
+            return res.json({ success: false, message: "Password must be at least 8 characters" })
         }
 
         // Check if phone already exists
@@ -31,8 +31,8 @@ const registerUser = async (req , res ) => {
             [phone]
         )
 
-        if(existing.length > 0) {
-            return res.json({success: false, message:"Phone already registered"})
+        if (existing.length > 0) {
+            return res.json({ success: false, message: "Phone already registered" })
         }
 
         // Hasing user password
@@ -49,7 +49,7 @@ const registerUser = async (req , res ) => {
         const token = jwt.sign({ id: result.insertId }, process.env.JWT_SECRET, {
             expiresIn: "7d"
         })
-        res.json({success: true, token})
+        res.json({ success: true, token })
 
     } catch (error) {
         console.error(error);
@@ -62,10 +62,10 @@ const loginUser = async (req, res) => {
 
     try {
 
-        const {phone, password} = req.body
+        const { phone, password } = req.body
 
-        if(!phone || !password) {
-            return res.json({success: false, message: "Missing phone or password"})
+        if (!phone || !password) {
+            return res.json({ success: false, message: "Missing phone or password" })
         }
 
         // find user by phone
@@ -76,21 +76,21 @@ const loginUser = async (req, res) => {
 
         const user = rows[0];
 
-        if(!user) {
-            return res.json({success: false, message: "User does not exist"})
+        if (!user) {
+            return res.json({ success: false, message: "User does not exist" })
         }
 
         //compare password
         const isMatch = await bcrypt.compare(password, user.password_hash)
 
-        if(!isMatch) {
-            res.json({success: false, message: "Invalid credentials"})
+        if (!isMatch) {
+            res.json({ success: false, message: "Invalid credentials" })
         }
 
         //create jwt token
-        const token = jwt.sign({id:user.id, role:user.role}, process.env.JWT_SECRET, {expiresIn: "7d"})
+        const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" })
 
-        res.json({success: true, token})
+        res.json({ success: true, token })
 
     } catch (error) {
         console.error(error);
@@ -112,7 +112,7 @@ function convertTo24Hour(time) {
 
 
 // API to book appointment
-const bookAppointment = async (req , res ) => {
+const bookAppointment = async (req, res) => {
 
     try {
 
@@ -121,8 +121,8 @@ const bookAppointment = async (req , res ) => {
 
         const time24 = convertTo24Hour(slotTime);
 
-        if(!slotDate || !slotTime) {
-            return res.json({success:false, message: "Missing date or time"})
+        if (!slotDate || !slotTime) {
+            return res.json({ success: false, message: "Missing date or time" })
         }
 
         const [results] = await db.execute(
@@ -130,16 +130,39 @@ const bookAppointment = async (req , res ) => {
             [userId, slotDate, time24]
         )
 
-        if(results.length > 0) {
-            return res.json({success: false, message: "Already booked this appointment"})
+        if (results.length > 0) {
+            return res.json({ success: false, message: "Already booked this appointment" })
         }
 
         const [result] = await db.execute(
             "INSERT INTO appointments (patient_id, slot_date, slot_time) VALUES (?, ?, ?)",
             [userId, slotDate, time24]
         )
-        
-        res.json({success: true, message: "Appointment booked successfully"})
+
+        res.json({ success: true, message: "Appointment booked successfully" })
+
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// API to show user appointment
+const userAppointments = async (req, res) => {
+
+    try {
+
+        const userId = req.user.userId
+
+        const [results] = await db.execute(
+            `SELECT slot_date, slot_time, status 
+            FROM appointments 
+            WHERE patient_id = ?
+            ORDER BY slot_date DESC, slot_time DESC`,
+            [userId]
+        )
+
+        res.json({ success: true, appointments: results })
 
     } catch (error) {
         console.error(error);
@@ -153,5 +176,6 @@ const bookAppointment = async (req , res ) => {
 export {
     registerUser,
     loginUser,
-    bookAppointment
+    bookAppointment,
+    userAppointments
 }

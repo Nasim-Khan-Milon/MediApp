@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -12,6 +12,8 @@ const DoctorContextProvider = (props) => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL
 
     const [dToken, setDToken] = useState(localStorage.getItem("dToken") ? localStorage.getItem("dToken") : "")
+    const [doctor, setDoctor] = useState(null);
+
 
     const loginDoctor = async (email, password) => {
 
@@ -20,7 +22,7 @@ const DoctorContextProvider = (props) => {
             const {data} = await axios.post(backendUrl + '/api/doctor/login', {email, password})
 
             if(data.success) {
-                console.log(data.dToken)
+                //console.log(data.dToken)
                 localStorage.setItem('dToken', data.dToken)
                 setDToken(data.dToken)
                 toast.success("Login successful!")
@@ -34,11 +36,36 @@ const DoctorContextProvider = (props) => {
         }
     }
 
+    const getDoctorData = async (email, password) => {
+
+        try {
+
+            const {data} = await axios.get(backendUrl + '/api/user/doctor-data')
+
+            if(data.success) {
+                setDoctor(data.doctor)
+                //console.log(data.doctor)
+            } else {
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
+
+    useEffect(() => {
+        getDoctorData()
+        //console.log(doctor)
+    }, [])
+
 
     const value = {
         backendUrl,
         dToken, setDToken,
-        loginDoctor
+        loginDoctor,
+        doctor, setDoctor
     }
 
     return (

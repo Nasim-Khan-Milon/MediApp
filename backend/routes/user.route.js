@@ -1,12 +1,15 @@
 import express from 'express'
-import { bookAppointment, loginUser, registerUser } from '../controllers/user.controller.js'
+import { bookAppointment, loginUser, registerUser, userAppointments } from '../controllers/user.controller.js'
 import authUser from '../middleware/authUser.middleware.js'
 import upload from '../middleware/multer.middleware.js'
+import { getDoctorData } from '../controllers/doctor.controller.js'
 
 const userRouter = express.Router()
 
 userRouter.post('/register', registerUser)
 userRouter.post('/login', loginUser)
 userRouter.post('/book-appointment', authUser, bookAppointment)
+userRouter.get('/doctor-data', getDoctorData)
+userRouter.get('/my-appointments', authUser, userAppointments)
 
 export default userRouter
