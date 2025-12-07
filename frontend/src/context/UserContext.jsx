@@ -84,7 +84,8 @@ const UserContextProvider = (props) => {
         backendUrl,
         token, setToken,
         loginUser, registerUser,
-        appointments, getUserAppointments
+        appointments,setAppointments,
+        getUserAppointments
     }
 
     return (

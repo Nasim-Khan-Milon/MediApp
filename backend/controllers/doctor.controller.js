@@ -78,9 +78,31 @@ const getDoctorData = async (req, res) => {
     }
 };
 
+// API to show doctor all appointments
+const doctorAppointments = async (req, res) => {
+
+    try {
+
+        const [results] = await db.execute(
+            `SELECT slot_date, slot_time, status 
+            FROM appointments
+            WHERE status = 'Scheduled'
+            ORDER BY slot_date ASC, slot_time ASC`,
+        )
+
+        res.json({ success: true, appointments: results })
+
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+
 
 
 export {
     loginDoctor,
-    getDoctorData
+    getDoctorData,
+    doctorAppointments
 }

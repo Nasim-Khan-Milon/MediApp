@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const AppointmentSlots = () => {
-    const { token, backendUrl } = useContext(UserContext);
+    const { token, backendUrl, getUserAppointments } = useContext(UserContext);
     const { doctor } = useContext(DoctorContext);
     const navigate = useNavigate();
 
@@ -99,6 +99,7 @@ const AppointmentSlots = () => {
                 toast.success(data.message);
                 getAvailableSlots(); // refresh slots after booking
                 setSlotTime('');
+                getUserAppointments()
                 navigate('/user/my-appointments');
             } else {
                 toast.error(data.message);

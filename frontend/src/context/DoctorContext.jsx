@@ -12,16 +12,17 @@ const DoctorContextProvider = (props) => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL
 
     const [dToken, setDToken] = useState(localStorage.getItem("dToken") ? localStorage.getItem("dToken") : "")
-    const [doctor, setDoctor] = useState(null);
+    const [doctor, setDoctor] = useState(null)
+    const [appointments, setAppointments] = useState([]);
 
 
     const loginDoctor = async (email, password) => {
 
         try {
 
-            const {data} = await axios.post(backendUrl + '/api/doctor/login', {email, password})
+            const { data } = await axios.post(backendUrl + '/api/doctor/login', { email, password })
 
-            if(data.success) {
+            if (data.success) {
                 //console.log(data.dToken)
                 localStorage.setItem('dToken', data.dToken)
                 setDToken(data.dToken)
@@ -40,9 +41,9 @@ const DoctorContextProvider = (props) => {
 
         try {
 
-            const {data} = await axios.get(backendUrl + '/api/user/doctor-data')
+            const { data } = await axios.get(backendUrl + '/api/user/doctor-data')
 
-            if(data.success) {
+            if (data.success) {
                 setDoctor(data.doctor)
                 //console.log(data.doctor)
             } else {
@@ -52,6 +53,32 @@ const DoctorContextProvider = (props) => {
         } catch (error) {
             console.log(error)
             toast.error(error.message)
+        }
+    }
+
+    const getDoctorAppointments = async () => {
+        try {
+
+            const dToken = localStorage.getItem("dToken");
+
+            const { data } = await axios.get(
+                backendUrl + "/api/doctor/appointments",
+                {
+                    headers: {
+                        dToken: dToken
+                    }
+                }
+            )
+
+            if(data.success) {
+                setAppointments(data.appointments)
+            } else {
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            console.error("Error fetching doctor appointments:", error);
+            return { success: false, message: error.message };
         }
     }
 
@@ -65,7 +92,9 @@ const DoctorContextProvider = (props) => {
         backendUrl,
         dToken, setDToken,
         loginDoctor,
-        doctor, setDoctor
+        doctor, setDoctor,
+        appointments, setAppointments,
+        getDoctorAppointments
     }
 
     return (

@@ -21,7 +21,6 @@ import MyProfile from './pages/User/MyProfile'
 
 import DoctorDashboard from './pages/Doctor/DoctorDashboard'
 import DoctorAppointments from './pages/Doctor/DoctorAppointments'
-import DoctorAvailability from './pages/Doctor/DoctorAvailability'
 import DoctorPatient from './pages/Doctor/DoctorPatient'
 import DoctorProfile from './pages/Doctor/DoctorProfile'
 import Footer from './components/Footer'
@@ -46,27 +45,23 @@ function App() {
       {showUserLayout && <Navbar />}
       {showDoctorLayout && dToken && <DoctorNavbar />}
 
-      <div className='flex items-center justify-center'>
+      <div className='flex gap-20'>
         {showDoctorLayout && dToken && <Sidebar />}
-        {/* ALL ROUTES IN ONE PLACE */}
         <Routes>
-          {/* Public */}
-          <Route path='/login' element={<Login />} />
+          <Route path='/login' element={<div className="flex items-center justify-center w-full"><Login /></div>} />
 
           {/* User Routes */}
           <Route path='/user/home' element={<Home />} />
           <Route path='/user/my-profile' element={<MyProfile />} />
-          <Route path='/user/my-appointments' element={<MyAppointments />} />
-          <Route path='/user/contact' element={<Contact />} />
-          <Route path='/user/about' element={<About />} />
-
+          <Route path='/user/my-appointments' element={<div className="flex items-center justify-center w-full mt-10 mb-20"><MyAppointments /></div>} />
+          <Route path='/user/contact' element={<div className="flex items-center justify-center w-full"><Contact /></div>} />
+          <Route path='/user/about' element={<div className="flex items-center justify-center w-full mx-20"><About /></div>} />
 
           {/* Doctor Routes */}
           {
             dToken && <>
               <Route path='/doctor/dashboard' element={<DoctorDashboard />} />
               <Route path='/doctor/appointments' element={<DoctorAppointments />} />
-              <Route path='/doctor/availability' element={<DoctorAvailability />} />
               <Route path='/doctor/patient' element={<DoctorPatient />} />
               <Route path='/doctor/profile' element={<DoctorProfile />} />
             </>
