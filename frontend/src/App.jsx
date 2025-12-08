@@ -52,7 +52,7 @@ function App() {
 
           {/* User Routes */}
           <Route path='/user/home' element={<Home />} />
-          <Route path='/user/my-profile' element={<MyProfile />} />
+          <Route path='/user/my-profile' element={<div className="flex items-center mx-20 w-full mb-20"><MyProfile /></div>} />
           <Route path='/user/my-appointments' element={<div className="flex items-center justify-center w-full mt-10 mb-20"><MyAppointments /></div>} />
           <Route path='/user/contact' element={<div className="flex items-center justify-center w-full"><Contact /></div>} />
           <Route path='/user/about' element={<div className="flex items-center justify-center w-full mx-20"><About /></div>} />

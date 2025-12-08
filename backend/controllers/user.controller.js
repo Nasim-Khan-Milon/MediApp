@@ -200,7 +200,7 @@ const cancelAppointment = async (req, res) => {
             [appointmentId]
         );
 
-        // // 4️⃣ Release doctor's slot (if you store slots separately)
+        // // Release doctor's slot (if you store slots separately)
         // // Assuming you have a `availability_slots` table
         // await db.execute(
         //     "UPDATE availability_slots SET is_available = 1 WHERE doctor_id = ? AND slot_date = ? AND slot_time = ?",
@@ -215,6 +215,31 @@ const cancelAppointment = async (req, res) => {
     }
 };
 
+// API to get user profile data
+const getProfile = async (req, res) => {
+    try {
+        const { userId } = req.user;
+
+        const [rows] = await db.execute(
+            "SELECT id, name, email, phone, created_at FROM users WHERE id = ? LIMIT 1",
+            [userId]
+        );
+
+        if (rows.length === 0) {
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        const userData = rows[0]
+
+        res.json({ success: true, userData });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+
 
 
 
@@ -223,5 +248,6 @@ export {
     loginUser,
     bookAppointment,
     userAppointments,
-    cancelAppointment
+    cancelAppointment,
+    getProfile
 }

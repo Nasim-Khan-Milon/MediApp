@@ -14,6 +14,7 @@ const UserContextProvider = (props) => {
 
     const [token, setToken] = useState(localStorage.getItem("token") ? localStorage.getItem("token") : "")
     const [appointments, setAppointments] = useState([])
+    const [userData, setUserData] = useState({})
 
     const loginUser = async (phone, password) => {
 
@@ -78,7 +79,7 @@ const UserContextProvider = (props) => {
             const { data } = await axios.post(
                 backendUrl + "/api/user/cancel-appointment",
                 { appointmentId },
-                { headers: {token} }
+                { headers: { token } }
             )
 
             if (data.success) {
@@ -92,9 +93,30 @@ const UserContextProvider = (props) => {
         }
     }
 
+    const loadUserProfileData = async () => {
+        try {
+            const { data } = await axios.get(backendUrl + '/api/user/my-profile', { headers: { token } })
+            if (data.success) {
+                setUserData(data.userData)
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+            console.log(error)
+        }
+    }
+
+
     useEffect(() => {
         if (token) {
             getUserAppointments()
+        }
+    }, [token])
+
+    useEffect(() => {
+        if (token) {
+            loadUserProfileData()
         }
     }, [token])
 
@@ -105,7 +127,8 @@ const UserContextProvider = (props) => {
         loginUser, registerUser,
         appointments, setAppointments,
         getUserAppointments,
-        cancelAppointment
+        cancelAppointment,
+        loadUserProfileData, userData
     }
 
     return (
