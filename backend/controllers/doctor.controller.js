@@ -136,6 +136,44 @@ const cancelAppointment = async (req, res) => {
     }
 };
 
+// API to complete appointment by doctor
+const completeAppointment = async (req, res) => {
+    try {
+        const { doctorId } = req.doctor;
+        const { appointmentId } = req.body;
+
+        if (!appointmentId) {
+            return res.json({ success: false, message: "Appointment ID is required" });
+        }
+
+        const [rows] = await db.execute(
+            "SELECT * FROM appointments WHERE id = ?",
+            [appointmentId]
+        );
+
+        if (rows.length === 0) {
+            return res.json({ success: false, message: "Appointment not found" });
+        }
+
+        const appointment = rows[0];
+
+        if (appointment.doctor_id !== doctorId) {
+            return res.json({ success: false, message: "Unauthorized doctor action" });
+        }
+
+        await db.execute(
+            "UPDATE appointments SET status = 'Completed' WHERE id = ?",
+            [appointmentId]
+        );
+
+        return res.json({ success: true, message: "Appointment Completed" });
+
+    } catch (error) {
+        console.error(error);
+        return res.json({ success: false, message: error.message });
+    }
+};
+
 
 
 
@@ -144,5 +182,6 @@ export {
     loginDoctor,
     getDoctorData,
     doctorAppointments,
-    cancelAppointment
+    cancelAppointment,
+    completeAppointment
 }

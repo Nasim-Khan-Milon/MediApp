@@ -4,7 +4,7 @@ import { AppContext } from '../../context/AppContext'
 
 const DoctorAppointments = () => {
 
-  const { appointments, getDoctorAppointments, dToken, cancelAppointment } = useContext(DoctorContext)
+  const { appointments, getDoctorAppointments, dToken, cancelAppointment, completeAppointment } = useContext(DoctorContext)
 
   const { formatSlotDate, formatSlotTime } = useContext(AppContext)
 
@@ -45,13 +45,25 @@ const DoctorAppointments = () => {
                     <td className="border px-4 py-2">{formatSlotDate(item.slot_date)}</td>
                     <td className="border px-4 py-2">{formatSlotTime(item.slot_time)}</td>
                     <td className="border px-4 py-2">{item.status}</td>
-                    <td className="border px-4 py-2">
+                    <td className="border px-4 py-2 flex gap-5 ">
                       {item.status === "Scheduled" && (
                         <button
                           className="text-red-600 hover:underline"
                           onClick={() => cancelAppointment(item.id)}
                         >
                           Cancel
+                        </button>
+                      )}
+                      {item.status !== "Scheduled" && (
+                        <span className="text-gray-400">-</span>
+                      )}
+
+                      {item.status === "Scheduled" && (
+                        <button
+                          className="text-red-600 hover:underline"
+                          onClick={() => completeAppointment(item.id)}
+                        >
+                          Complete
                         </button>
                       )}
                       {item.status !== "Scheduled" && (
