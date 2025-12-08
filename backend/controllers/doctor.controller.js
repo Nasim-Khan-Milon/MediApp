@@ -84,7 +84,7 @@ const doctorAppointments = async (req, res) => {
     try {
 
         const [results] = await db.execute(
-            `SELECT slot_date, slot_time, status 
+            `SELECT id, slot_date, slot_time, status 
             FROM appointments
             WHERE status = 'Scheduled'
             ORDER BY slot_date ASC, slot_time ASC`,
@@ -98,11 +98,51 @@ const doctorAppointments = async (req, res) => {
     }
 }
 
+// API to cancel appointment by doctor
+const cancelAppointment = async (req, res) => {
+    try {
+        const { doctorId } = req.doctor;
+        const { appointmentId } = req.body;
+
+        if (!appointmentId) {
+            return res.json({ success: false, message: "Appointment ID is required" });
+        }
+
+        const [rows] = await db.execute(
+            "SELECT * FROM appointments WHERE id = ?",
+            [appointmentId]
+        );
+
+        if (rows.length === 0) {
+            return res.json({ success: false, message: "Appointment not found" });
+        }
+
+        const appointment = rows[0];
+
+        if (appointment.doctor_id !== doctorId) {
+            return res.json({ success: false, message: "Unauthorized doctor action" });
+        }
+
+        await db.execute(
+            "UPDATE appointments SET status = 'Cancelled' WHERE id = ?",
+            [appointmentId]
+        );
+
+        return res.json({ success: true, message: "Appointment Cancelled by Doctor" });
+
+    } catch (error) {
+        console.error(error);
+        return res.json({ success: false, message: error.message });
+    }
+};
+
+
 
 
 
 export {
     loginDoctor,
     getDoctorData,
-    doctorAppointments
+    doctorAppointments,
+    cancelAppointment
 }

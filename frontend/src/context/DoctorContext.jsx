@@ -82,6 +82,25 @@ const DoctorContextProvider = (props) => {
         }
     }
 
+    const cancelAppointment = async (appointmentId) => {
+        try {
+            const { data } = await axios.post(
+                backendUrl + "/api/doctor/cancel-appointment",
+                { appointmentId },
+                { headers: {dToken} }
+            )
+
+            if (data.success) {
+                toast.success(data.message)
+                getDoctorAppointments()
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     useEffect(() => {
         getDoctorData()
         //console.log(doctor)
@@ -94,7 +113,8 @@ const DoctorContextProvider = (props) => {
         loginDoctor,
         doctor, setDoctor,
         appointments, setAppointments,
-        getDoctorAppointments
+        getDoctorAppointments,
+        cancelAppointment
     }
 
     return (

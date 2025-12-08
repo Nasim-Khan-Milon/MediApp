@@ -4,7 +4,7 @@ import { AppContext } from '../../context/AppContext'
 
 const DoctorAppointments = () => {
 
-  const { appointments, getDoctorAppointments, dToken } = useContext(DoctorContext)
+  const { appointments, getDoctorAppointments, dToken, cancelAppointment } = useContext(DoctorContext)
 
   const { formatSlotDate, formatSlotTime } = useContext(AppContext)
 
@@ -49,7 +49,7 @@ const DoctorAppointments = () => {
                       {item.status === "Scheduled" && (
                         <button
                           className="text-red-600 hover:underline"
-                          onClick={() => onCancel(item.id)}
+                          onClick={() => cancelAppointment(item.id)}
                         >
                           Cancel
                         </button>
