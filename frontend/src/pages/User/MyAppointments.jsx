@@ -7,7 +7,7 @@ import { assets } from '../../assets/assets_frontend/assets'
 
 const MyAppointments = () => {
 
-  const { appointments, token } = useContext(UserContext)
+  const { appointments, token, cancelAppointment } = useContext(UserContext)
   const { formatSlotDate, formatSlotTime } = useContext(AppContext)
 
 
@@ -48,9 +48,9 @@ const MyAppointments = () => {
                       {item.status === "Scheduled" && (
                         <button
                           className="text-red-600 hover:underline"
-                          onClick={() => onCancel(item.id)}
+                          onClick={() => cancelAppointment(item.id)}
                         >
-                          Cancel
+                          cancel
                         </button>
                       )}
                       {item.status !== "Scheduled" && (

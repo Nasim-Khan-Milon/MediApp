@@ -155,7 +155,7 @@ const userAppointments = async (req, res) => {
         const userId = req.user.userId
 
         const [results] = await db.execute(
-            `SELECT slot_date, slot_time, status 
+            `SELECT id, slot_date, slot_time, status 
             FROM appointments 
             WHERE patient_id = ?
             ORDER BY slot_date DESC, slot_time DESC`,
@@ -170,6 +170,51 @@ const userAppointments = async (req, res) => {
     }
 }
 
+// API to cancel appointment by user
+const cancelAppointment = async (req, res) => {
+    try {
+        const { userId } = req.user;
+        const { appointmentId } = req.body;
+
+        if (!appointmentId) {
+            return res.json({ success: false, message: "Appointment ID is required" });
+        }
+
+        const [appointmentRows] = await db.execute(
+            "SELECT * FROM appointments WHERE id = ?",
+            [appointmentId]
+        );
+
+        if (appointmentRows.length === 0) {
+            return res.json({ success: false, message: "Appointment not found" });
+        }
+
+        const appointment = appointmentRows[0];
+
+        if (appointment.patient_id !== userId) {
+            return res.json({ success: false, message: "Unauthorized action" });
+        }
+
+        await db.execute(
+            "UPDATE appointments SET status = 'Cancelled' WHERE id = ?",
+            [appointmentId]
+        );
+
+        // // 4️⃣ Release doctor's slot (if you store slots separately)
+        // // Assuming you have a `availability_slots` table
+        // await db.execute(
+        //     "UPDATE availability_slots SET is_available = 1 WHERE doctor_id = ? AND slot_date = ? AND slot_time = ?",
+        //     [appointment.doctor_id, appointment.slot_date, appointment.slot_time]
+        // );
+
+        res.json({ success: true, message: "Appointment Cancelled" });
+
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
 
 
 
@@ -177,5 +222,6 @@ export {
     registerUser,
     loginUser,
     bookAppointment,
-    userAppointments
+    userAppointments,
+    cancelAppointment
 }

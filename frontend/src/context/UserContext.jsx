@@ -73,8 +73,27 @@ const UserContextProvider = (props) => {
         }
     }
 
+    const cancelAppointment = async (appointmentId) => {
+        try {
+            const { data } = await axios.post(
+                backendUrl + "/api/user/cancel-appointment",
+                { appointmentId },
+                { headers: {token} }
+            )
+
+            if (data.success) {
+                toast.success(data.message)
+                getUserAppointments()
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     useEffect(() => {
-        if(token) {
+        if (token) {
             getUserAppointments()
         }
     }, [token])
@@ -84,8 +103,9 @@ const UserContextProvider = (props) => {
         backendUrl,
         token, setToken,
         loginUser, registerUser,
-        appointments,setAppointments,
-        getUserAppointments
+        appointments, setAppointments,
+        getUserAppointments,
+        cancelAppointment
     }
 
     return (
