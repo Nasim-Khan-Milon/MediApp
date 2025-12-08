@@ -1,6 +1,7 @@
 import db from '../config/db.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import moment from 'moment';
 
 
 // Api for doctor Login
@@ -174,6 +175,43 @@ const completeAppointment = async (req, res) => {
     }
 };
 
+// API to get Doctor Dashboard data
+const doctorDashboard = async (req, res) => {
+    try {
+        const { doctorId } = req.doctor
+
+        const [totalPatientsRows] = await db.execute(
+            "SELECT COUNT(DISTINCT patient_id) AS totalPatients FROM appointments WHERE doctor_id = ?",
+            [doctorId]
+        )
+        const totalPatients = totalPatientsRows[0].totalPatients || 0
+
+        const [totalAppointmentsRows] = await db.execute(
+            "SELECT COUNT(*) AS totalAppointments FROM appointments WHERE doctor_id = ?",
+            [doctorId]
+        )
+        const totalAppointments = totalAppointmentsRows[0].totalAppointments || 0
+
+        const today = moment().format('YYYY-MM-DD'); 
+        const [todaysScheduledRows] = await db.execute(
+            "SELECT COUNT(*) AS todaysScheduled FROM appointments WHERE doctor_id = ? AND slot_date = ? AND status = 'Scheduled'",
+            [doctorId, today]
+        )
+        const todaysScheduled = todaysScheduledRows[0].todaysScheduled || 0
+
+        const dashboard = {
+                totalPatients,
+                totalAppointments,
+                todaysScheduled
+            }
+
+        res.json({success: true, dashboard})
+
+    } catch (error) {
+        console.error(error)
+        res.json({ success: false, message: error.message })
+    }
+}
 
 
 
@@ -183,5 +221,6 @@ export {
     getDoctorData,
     doctorAppointments,
     cancelAppointment,
-    completeAppointment
+    completeAppointment,
+    doctorDashboard
 }

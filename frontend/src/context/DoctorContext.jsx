@@ -14,6 +14,11 @@ const DoctorContextProvider = (props) => {
     const [dToken, setDToken] = useState(localStorage.getItem("dToken") ? localStorage.getItem("dToken") : "")
     const [doctor, setDoctor] = useState(null)
     const [appointments, setAppointments] = useState([]);
+    const [dashboard, setDashboard] = useState({
+        totalPatients: 0,
+        totalAppointments: 0,
+        todaysAppointments: 0
+    });
 
 
     const loginDoctor = async (email, password) => {
@@ -70,7 +75,7 @@ const DoctorContextProvider = (props) => {
                 }
             )
 
-            if(data.success) {
+            if (data.success) {
                 setAppointments(data.appointments)
             } else {
                 toast.error(data.message)
@@ -87,7 +92,7 @@ const DoctorContextProvider = (props) => {
             const { data } = await axios.post(
                 backendUrl + "/api/doctor/cancel-appointment",
                 { appointmentId },
-                { headers: {dToken} }
+                { headers: { dToken } }
             )
 
             if (data.success) {
@@ -106,7 +111,7 @@ const DoctorContextProvider = (props) => {
             const { data } = await axios.post(
                 backendUrl + "/api/doctor/complete-appointment",
                 { appointmentId },
-                { headers: {dToken} }
+                { headers: { dToken } }
             )
 
             if (data.success) {
@@ -120,10 +125,34 @@ const DoctorContextProvider = (props) => {
         }
     }
 
+    const getDoctorDashboard = async () => {
+        try {
+            const { data } = await axios.get(backendUrl + '/api/doctor/dashboard', {
+                headers: { dToken }
+            })
+
+            if (data.success) {
+                setDashboard(data.dashboard)
+            } else {
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            console.error(error)
+            toast.error(error.message)
+        }
+    }
+
     useEffect(() => {
         getDoctorData()
         //console.log(doctor)
     }, [])
+
+    useEffect(() => {
+        if (dToken) {
+            getDoctorDashboard()
+        }
+    })
 
 
     const value = {
@@ -134,7 +163,8 @@ const DoctorContextProvider = (props) => {
         appointments, setAppointments,
         getDoctorAppointments,
         cancelAppointment,
-        completeAppointment
+        completeAppointment,
+        dashboard
     }
 
     return (
