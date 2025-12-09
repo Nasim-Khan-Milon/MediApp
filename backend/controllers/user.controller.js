@@ -221,7 +221,7 @@ const getProfile = async (req, res) => {
         const { userId } = req.user;
 
         const [rows] = await db.execute(
-            "SELECT id, name, email, phone, created_at FROM users WHERE id = ? LIMIT 1",
+            "SELECT id, name, email, phone, gender, dob, created_at FROM users WHERE id = ? LIMIT 1",
             [userId]
         );
 
@@ -239,6 +239,52 @@ const getProfile = async (req, res) => {
     }
 };
 
+// API to update user profile
+const updateProfile = async (req, res) => {
+    try {
+        const { userId } = req.user
+        const { name, email, phone, gender, dob } = req.body
+
+        if (!name || !phone) {
+            return res.json({ success: false, message: "Name and phone are required" })
+        }
+
+        const [existingRows] = await db.execute(
+            "SELECT id FROM users WHERE phone = ? AND id != ?",
+            [phone, userId]
+        );
+
+        if (existingRows.length > 0) {
+            return res.json({ success: false, message: "Phone number already in use" })
+        }
+
+        await db.execute(
+            `UPDATE users 
+            SET name = ?, email = ?, phone = ?, gender = ?, dob = ? 
+            WHERE id = ?`,
+            [
+                name,
+                email || 'demo@google.com',
+                phone,
+                gender || 'Not Provided',
+                dob || '2000-01-01',
+                userId
+            ]
+        )
+
+        // Return updated profile
+        const [updatedRows] = await db.execute(
+            "SELECT id, name, email, phone, gender, dob, created_at FROM users WHERE id = ?",
+            [userId]
+        )
+
+        res.json({ success: true, message: "Profile updated successfully", userData: updatedRows[0] })
+
+    } catch (error) {
+        console.error(error)
+        res.json({ success: false, message: error.message })
+    }
+}
 
 
 
@@ -249,5 +295,6 @@ export {
     bookAppointment,
     userAppointments,
     cancelAppointment,
-    getProfile
+    getProfile,
+    updateProfile
 }

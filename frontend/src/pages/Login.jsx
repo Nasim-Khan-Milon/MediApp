@@ -29,6 +29,7 @@ const Login = () => {
             if (state === 'Sign Up' && role === 'User') {
                 registerUser(name, phone, password)
                 navigate('/login')
+                setState('Login')
             } else if (state === 'Login' && role === 'User') {
                 loginUser(phone, password)
                 navigate('/user/home')

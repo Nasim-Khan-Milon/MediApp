@@ -128,7 +128,7 @@ const UserContextProvider = (props) => {
         appointments, setAppointments,
         getUserAppointments,
         cancelAppointment,
-        loadUserProfileData, userData
+        loadUserProfileData, userData, setUserData
     }
 
     return (
