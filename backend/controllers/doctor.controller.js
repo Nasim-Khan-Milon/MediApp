@@ -35,7 +35,7 @@ const loginDoctor = async (req, res) => {
         const isMatch = await bcrypt.compare(password, doctor.password_hash)
 
         if (!isMatch) {
-            res.json({ success: false, message: "Invalid credentials" })
+            res.json({ success: false, message: "Invalid credentials1" })
         }
 
         //create jwt token
@@ -70,7 +70,7 @@ const getDoctorData = async (req, res) => {
         if (!doctor.slots_booked || typeof doctor.slots_booked !== 'object') {
             doctor.slots_booked = doctor.slots_booked ? JSON.parse(doctor.slots_booked) : {};
         }
-        
+
         res.json({ success: true, doctor });
 
     } catch (error) {
@@ -192,7 +192,7 @@ const doctorDashboard = async (req, res) => {
         )
         const totalAppointments = totalAppointmentsRows[0].totalAppointments || 0
 
-        const today = moment().format('YYYY-MM-DD'); 
+        const today = moment().format('YYYY-MM-DD');
         const [todaysScheduledRows] = await db.execute(
             "SELECT COUNT(*) AS todaysScheduled FROM appointments WHERE doctor_id = ? AND slot_date = ? AND status = 'Scheduled'",
             [doctorId, today]
@@ -200,12 +200,12 @@ const doctorDashboard = async (req, res) => {
         const todaysScheduled = todaysScheduledRows[0].todaysScheduled || 0
 
         const dashboard = {
-                totalPatients,
-                totalAppointments,
-                todaysScheduled
-            }
+            totalPatients,
+            totalAppointments,
+            todaysScheduled
+        }
 
-        res.json({success: true, dashboard})
+        res.json({ success: true, dashboard })
 
     } catch (error) {
         console.error(error)
@@ -213,6 +213,44 @@ const doctorDashboard = async (req, res) => {
     }
 }
 
+// API to change Doctor password
+const changeDoctorPassword = async (req, res) => {
+    try {
+        const doctorId = req.doctor.doctorId
+        const { oldPassword, newPassword } = req.body
+
+        if (!oldPassword || !newPassword)
+            return res.json({ success: false, message: "Old password and new password are required" })
+
+        const [rows] = await db.execute(
+            "SELECT password_hash FROM doctors WHERE id = ?",
+            [doctorId]
+        )
+
+        if (rows.length === 0)
+            return res.json({ success: false, message: "Doctor not found" })
+
+        const doctor = rows[0]
+        const isMatch = await bcrypt.compare(oldPassword, doctor.password_hash)
+
+        if (!isMatch)
+            return res.json({ success: false, message: "Old password is incorrect" })
+
+        const salt = await bcrypt.genSalt(10)
+        const newHash = await bcrypt.hash(newPassword, salt)
+
+        await db.execute(
+            "UPDATE doctors SET password_hash = ? WHERE id = ?",
+            [newHash, doctorId]
+        )
+
+        return res.json({ success: true, message: "Password changed successfully" })
+
+    } catch (error) {
+        console.log(error)
+        return res.json({ success: false, message: error.message })
+    }
+}
 
 
 
@@ -222,5 +260,6 @@ export {
     doctorAppointments,
     cancelAppointment,
     completeAppointment,
-    doctorDashboard
+    doctorDashboard,
+    changeDoctorPassword
 }

@@ -143,6 +143,30 @@ const DoctorContextProvider = (props) => {
         }
     }
 
+    const changeDoctorPassword = async (oldPassword, newPassword) => {
+
+        try {
+
+            const {data} = await axios.post( backendUrl + '/api/doctor/change-password',
+                { oldPassword, newPassword },
+                { headers: { dToken } }
+            )
+
+            if(data.success) {
+                toast.success(data.message)
+                return true
+            } else {
+                toast.error(data.message)
+                return false
+            }
+
+        } catch (error) {
+            console.log(error)
+            return { success: false, message: error.response?.data?.message || "Something went wrong" }
+        }
+
+    }
+
     useEffect(() => {
         getDoctorData()
         //console.log(doctor)
@@ -164,7 +188,8 @@ const DoctorContextProvider = (props) => {
         getDoctorAppointments,
         cancelAppointment,
         completeAppointment,
-        dashboard
+        dashboard,
+        changeDoctorPassword
     }
 
     return (

@@ -1,7 +1,34 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { assets } from '../../assets/assets_frontend/assets'
+import { DoctorContext } from '../../context/DoctorContext'
+import { toast } from 'react-toastify'
 
 const DoctorProfile = () => {
+
+  const { changeDoctorPassword } = useContext(DoctorContext)
+
+  const [showModal, setShowModal] = useState(false)
+  const [oldPassword, setOldPassword] = useState("")
+  const [reOldPassword, setReOldPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (oldPassword !== reOldPassword) {
+      return toast.error("Old passwords do not match")
+    }
+
+    const success = await changeDoctorPassword(oldPassword, newPassword)
+
+    if (success) {
+      setShowModal(false)   // Close modal
+      setOldPassword("")
+      setReOldPassword("")
+      setNewPassword("")
+    }
+  }
+
   return (
     <div className="container mx-auto py-5">
       <div className=" mx-auto">
@@ -11,7 +38,7 @@ const DoctorProfile = () => {
           <div className="flex flex-col items-center mb-4">
             <img
               src={assets.doc1}
-              alt="Dr. Md. Sirajur Rahman Sarwar"
+              alt="Doctor"
               className="rounded-full w-32 h-32 mb-3 object-cover"
             />
             <h2 className="text-blue-800 font-bold text-center text-xl">
@@ -48,15 +75,78 @@ const DoctorProfile = () => {
             </div>
           </div>
 
-          {/* Edit Profile Button */}
+          {/* Change Password Button */}
           <div className="text-center">
-            <a
-              href="/edit-doctor-profile"
+            <button
+              onClick={() => setShowModal(true)}
               className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
             >
-              Edit Profile
-            </a>
+              Change Password
+            </button>
           </div>
+
+
+          {/* ---------------------- MODAL START ---------------------- */}
+          {showModal && (
+            <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex justify-center items-center z-50">
+              <div className="bg-white p-6 rounded shadow-lg w-96">
+
+                <h3 className="text-lg font-semibold mb-4 text-center">
+                  Change Password
+                </h3>
+
+                <form onSubmit={handleSubmit} className="space-y-3">
+
+                  <input
+                    type="password"
+                    placeholder="Old Password"
+                    className="border p-2 w-full rounded"
+                    value={oldPassword}
+                    onChange={e => setOldPassword(e.target.value)}
+                    required
+                  />
+
+                  <input
+                    type="password"
+                    placeholder="Re-enter Old Password"
+                    className="border p-2 w-full rounded"
+                    value={reOldPassword}
+                    onChange={e => setReOldPassword(e.target.value)}
+                    required
+                  />
+
+                  <input
+                    type="password"
+                    placeholder="New Password"
+                    className="border p-2 w-full rounded"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    required
+                  />
+
+                  <div className="flex justify-end gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                      className="px-4 py-2 border rounded"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-600 text-white rounded"
+                    >
+                      Submit
+                    </button>
+                  </div>
+
+                </form>
+
+              </div>
+            </div>
+          )}
+          {/* ---------------------- MODAL END ---------------------- */}
 
         </div>
       </div>
