@@ -22,6 +22,7 @@ const DoctorAppointments = () => {
 
   useEffect(() => {
     getDoctorAppointments()
+    console.log(appointments)
   }, [dToken])
 
   return dToken && (
@@ -31,17 +32,17 @@ const DoctorAppointments = () => {
           Your Appointments
         </h2>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto border border-gray-300">
           <table className="w-full border border-gray-300 text-sm">
             <thead className="bg-blue-100">
               <tr>
-                <th className="border px-4 py-2 text-left">#</th>
-                <th className="border px-4 py-2 text-left">Patient Name</th>
-                <th className="border px-4 py-2 text-left">Patient Age</th>
-                <th className="border px-4 py-2 text-left">Date</th>
-                <th className="border px-4 py-2 text-left">Time</th>
-                <th className="border px-4 py-2 text-left">Status</th>
-                <th className="border px-4 py-2 text-left">Actions</th>
+                <th className="border-r border-gray-300 px-4 py-2 text-left">#</th>
+                <th className="border-r border-gray-300 px-4 py-2 text-left">Patient Name</th>
+                <th className="border-r border-gray-300 px-4 py-2 text-left">Patient Age</th>
+                <th className="border-r border-gray-300 px-4 py-2 text-left">Date</th>
+                <th className="border-r border-gray-300 px-4 py-2 text-left">Time</th>
+                <th className="border-r border-gray-300 px-4 py-2 text-left">Status</th>
+                <th className="flex justify-center items-center px-4 py-2 text-left">Actions</th>
               </tr>
             </thead>
 
@@ -55,32 +56,35 @@ const DoctorAppointments = () => {
               ) : (
                 appointments.map((item, index) => (
                   <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="border px-4 py-2">{index + 1}</td>
-                    <td className="border px-4 py-2">{item.patient_name}</td>
-                    <td className="border px-4 py-2">{calculateAge(item.patient_dob)}</td>
-                    <td className="border px-4 py-2">{formatSlotDate(item.slot_date)}</td>
-                    <td className="border px-4 py-2">{formatSlotTime(item.slot_time)}</td>
-                    <td className="border px-4 py-2">{item.status}</td>
-                    <td className="border px-4 py-2 flex gap-5 ">
-                      {item.status === "Scheduled" && (
-                        <button
-                          className="text-red-600 hover:underline"
-                          onClick={() => cancelAppointment(item.id)}
-                        >
-                          Cancel
-                        </button>
-                      )}
-                      {item.status !== "Scheduled" && <span className="text-gray-400">-</span>}
+                    <td className="border-t border-r border-gray-300 px-4 py-2">{index + 1}</td>
+                    <td className="border-t border-r border-gray-300 px-4 py-2">{item.patient_name}</td>
+                    <td className="border-t border-r border-gray-300 px-4 py-2">{calculateAge(item.patient_dob)}</td>
+                    <td className="border-t border-r border-gray-300 px-4 py-2">{formatSlotDate(item.slot_date)}</td>
+                    <td className="border-t border-r border-gray-300 px-4 py-2">{formatSlotTime(item.slot_time)}</td>
+                    <td className="border-t border-r border-gray-300 px-4 py-2">{item.status}</td>
+                    <td className="border-t px-4 py-2 border-gray-300 flex gap-5 ">
+                      {
+                        item.status === "Scheduled" ? (
+                          <div className='flex flex-wrap justify-between gap-5'>
+                            <button
+                              className="text-white  bg-red-500 px-4 py-1.5 rounded-full"
+                              onClick={() => cancelAppointment(item.id)}
+                            >
+                              Cancel
+                            </button>
 
-                      {item.status === "Scheduled" && (
-                        <button
-                          className="text-red-600 hover:underline"
-                          onClick={() => completeAppointment(item.id)}
-                        >
-                          Complete
-                        </button>
-                      )}
-                      {item.status !== "Scheduled" && <span className="text-gray-400">-</span>}
+                            <button
+                              className="text-white  bg-primary px-4 py-1.5 rounded-full"
+                              onClick={() => completeAppointment(item.id)}
+                            >
+                              Complete
+                            </button>
+                          </div>
+                        ) : (
+                          ""
+                        )
+                      }
+                      
                     </td>
                   </tr>
                 ))

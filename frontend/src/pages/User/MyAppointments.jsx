@@ -10,6 +10,7 @@ const MyAppointments = () => {
   const { appointments, token, cancelAppointment } = useContext(UserContext)
   const { formatSlotDate, formatSlotTime } = useContext(AppContext)
 
+  
 
   return token && (
     <div className="bg-white shadow rounded-lg min-w-[80-vw] p-6">
@@ -47,7 +48,7 @@ const MyAppointments = () => {
                     <td className="border px-4 py-2">
                       {item.status === "Scheduled" && (
                         <button
-                          className="text-red-600 hover:underline"
+                          className="text-white  bg-red-500 px-4 py-1.5 rounded-full"
                           onClick={() => cancelAppointment(item.id)}
                         >
                           cancel
