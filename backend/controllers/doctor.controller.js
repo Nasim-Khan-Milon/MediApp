@@ -84,12 +84,23 @@ const doctorAppointments = async (req, res) => {
 
     try {
 
+        const now = moment().format('YYYY-MM-DD HH:mm:ss')
+
+        await db.execute(
+            `UPDATE appointments 
+            SET status = 'Cancelled' 
+            WHERE status = 'Scheduled' 
+            AND TIMESTAMP(slot_date, slot_time) + INTERVAL 40 MINUTE <= ?`,
+            [now]
+        )
+
         const [results] = await db.execute(
             `SELECT id, slot_date, slot_time, status 
             FROM appointments
             WHERE status = 'Scheduled'
             ORDER BY slot_date ASC, slot_time ASC`,
         )
+
 
         res.json({ success: true, appointments: results })
 
