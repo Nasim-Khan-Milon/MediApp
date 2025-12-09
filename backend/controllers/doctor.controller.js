@@ -95,10 +95,12 @@ const doctorAppointments = async (req, res) => {
         )
 
         const [results] = await db.execute(
-            `SELECT id, slot_date, slot_time, status 
-            FROM appointments
-            WHERE status = 'Scheduled'
-            ORDER BY slot_date ASC, slot_time ASC`,
+            `SELECT a.id, a.slot_date, a.slot_time, a.status, a.patient_id,
+                u.name AS patient_name, u.dob AS patient_dob
+            FROM appointments a
+            JOIN users u ON a.patient_id = u.id
+            WHERE a.status = 'Scheduled'
+            ORDER BY a.slot_date ASC, a.slot_time ASC`
         )
 
 

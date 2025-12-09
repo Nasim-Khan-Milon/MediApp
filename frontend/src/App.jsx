@@ -45,7 +45,7 @@ function App() {
       {showUserLayout && <Navbar />}
       {showDoctorLayout && dToken && <DoctorNavbar />}
 
-      <div className='flex gap-20'>
+      <div className='flex gap-10'>
         {showDoctorLayout && dToken && <Sidebar />}
         <Routes>
           <Route path='/login' element={<div className="flex items-center justify-center w-full"><Login /></div>} />

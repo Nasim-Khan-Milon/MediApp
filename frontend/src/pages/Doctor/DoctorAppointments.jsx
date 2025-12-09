@@ -5,15 +5,27 @@ import { AppContext } from '../../context/AppContext'
 const DoctorAppointments = () => {
 
   const { appointments, getDoctorAppointments, dToken, cancelAppointment, completeAppointment } = useContext(DoctorContext)
-
   const { formatSlotDate, formatSlotTime } = useContext(AppContext)
+
+  // Function to calculate age from dob
+  const calculateAge = (dob) => {
+    if (!dob) return '-'
+    const birthDate = new Date(dob)
+    const today = new Date()
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const m = today.getMonth() - birthDate.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+    return age
+  }
 
   useEffect(() => {
     getDoctorAppointments()
-  })
+  }, [dToken])
 
   return dToken && (
-    <div className="bg-white shadow rounded-lg min-w-[80-vw] p-6">
+    <div className="bg-white shadow rounded-lg min-w-[80-vw] mt-10">
       <div className="p-6">
         <h2 className="text-lg font-semibold text-blue-600 mb-4 m-auto">
           Your Appointments
@@ -24,6 +36,8 @@ const DoctorAppointments = () => {
             <thead className="bg-blue-100">
               <tr>
                 <th className="border px-4 py-2 text-left">#</th>
+                <th className="border px-4 py-2 text-left">Patient Name</th>
+                <th className="border px-4 py-2 text-left">Patient Age</th>
                 <th className="border px-4 py-2 text-left">Date</th>
                 <th className="border px-4 py-2 text-left">Time</th>
                 <th className="border px-4 py-2 text-left">Status</th>
@@ -34,7 +48,7 @@ const DoctorAppointments = () => {
             <tbody>
               {appointments.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-4">
+                  <td colSpan={7} className="text-center py-4">
                     No appointments found.
                   </td>
                 </tr>
@@ -42,6 +56,8 @@ const DoctorAppointments = () => {
                 appointments.map((item, index) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="border px-4 py-2">{index + 1}</td>
+                    <td className="border px-4 py-2">{item.patient_name}</td>
+                    <td className="border px-4 py-2">{calculateAge(item.patient_dob)}</td>
                     <td className="border px-4 py-2">{formatSlotDate(item.slot_date)}</td>
                     <td className="border px-4 py-2">{formatSlotTime(item.slot_time)}</td>
                     <td className="border px-4 py-2">{item.status}</td>
@@ -54,9 +70,7 @@ const DoctorAppointments = () => {
                           Cancel
                         </button>
                       )}
-                      {item.status !== "Scheduled" && (
-                        <span className="text-gray-400">-</span>
-                      )}
+                      {item.status !== "Scheduled" && <span className="text-gray-400">-</span>}
 
                       {item.status === "Scheduled" && (
                         <button
@@ -66,9 +80,7 @@ const DoctorAppointments = () => {
                           Complete
                         </button>
                       )}
-                      {item.status !== "Scheduled" && (
-                        <span className="text-gray-400">-</span>
-                      )}
+                      {item.status !== "Scheduled" && <span className="text-gray-400">-</span>}
                     </td>
                   </tr>
                 ))
