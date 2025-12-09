@@ -286,7 +286,46 @@ const updateProfile = async (req, res) => {
     }
 }
 
+// API to change User password
+const changeUserPassword = async (req, res) => {
+    try {
+        const userId = req.user.userId
+        const { oldPassword, newPassword } = req.body
 
+        if (!oldPassword || !newPassword) {
+            return res.json({ success: false, message: "Old password and new password are required" })
+        }
+
+        const [rows] = await db.execute(
+            "SELECT password_hash FROM users WHERE id = ?",
+            [userId]
+        )
+
+        if (rows.length === 0) {
+            return res.json({ success: false, message: "User not found" })
+        }
+
+        const user = rows[0]
+        const isMatch = await bcrypt.compare(oldPassword, user.password_hash)
+        if (!isMatch) {
+            return res.json({ success: false, message: "Old password is incorrect" })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const newHash = await bcrypt.hash(newPassword, salt)
+
+        await db.execute(
+            "UPDATE users SET password_hash = ? WHERE id = ?",
+            [newHash, userId]
+        )
+
+        return res.json({ success: true, message: "Password changed successfully" })
+
+    } catch (error) {
+        console.error(error)
+        return res.json({ success: false, message: error.message })
+    }
+}
 
 
 export {
@@ -296,5 +335,6 @@ export {
     userAppointments,
     cancelAppointment,
     getProfile,
-    updateProfile
+    updateProfile,
+    changeUserPassword
 }

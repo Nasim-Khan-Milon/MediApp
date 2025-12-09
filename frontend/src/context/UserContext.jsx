@@ -107,6 +107,28 @@ const UserContextProvider = (props) => {
         }
     }
 
+    const changeUserPassword = async (oldPassword, newPassword) => {
+
+        try {
+
+            const {data} = await axios.post( backendUrl + '/api/user/change-password',
+                { oldPassword, newPassword },
+                { headers: { token } }
+            )
+
+            if(data.success) {
+                toast.success(data.message)
+                return true
+            } else {
+                toast.error(data.message)
+                return false
+            }
+
+        } catch (error) {
+            console.log(error)
+            return { success: false, message: error.response?.data?.message || "Something went wrong" }
+        }
+    }
 
     useEffect(() => {
         if (token) {
@@ -128,7 +150,9 @@ const UserContextProvider = (props) => {
         appointments, setAppointments,
         getUserAppointments,
         cancelAppointment,
-        loadUserProfileData, userData, setUserData
+        loadUserProfileData, 
+        userData, setUserData,
+        changeUserPassword
     }
 
     return (

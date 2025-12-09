@@ -5,8 +5,14 @@ import axios from 'axios';
 import { assets } from '../../assets/assets_frontend/assets';
 
 const MyProfile = () => {
-  const { userData, setUserData, token, backendUrl, loadUserProfileData } = useContext(UserContext);
+  const { userData, setUserData, token, backendUrl, loadUserProfileData, changeUserPassword } = useContext(UserContext);
+
   const [isEdit, setIsEdit] = useState(false);
+
+  const [showModal, setShowModal] = useState(false)
+    const [oldPassword, setOldPassword] = useState("")
+    const [reOldPassword, setReOldPassword] = useState("")
+    const [newPassword, setNewPassword] = useState("")
 
   useEffect(() => {
     if (token && !userData) {
@@ -36,6 +42,22 @@ const MyProfile = () => {
     }
   }
 
+  const handleSubmit = async (e) => {
+      e.preventDefault()
+  
+      if (oldPassword !== reOldPassword) {
+        return toast.error("Old passwords do not match")
+      }
+  
+      const success = await changeUserPassword(oldPassword, newPassword)
+  
+      if (success) {
+        setShowModal(false)   /
+        setOldPassword("")
+        setReOldPassword("")
+        setNewPassword("")
+      }
+    }
 
   return userData && (
     <div className="max-w-lg flex flex-col gap-4 text-sm pt-5">
@@ -134,7 +156,7 @@ const MyProfile = () => {
       </div>
 
       {/* Edit / Save Buttons */}
-      <div className="mt-5">
+      <div className="mt-5 flex gap-14 justify-between items-center">
         {isEdit ? (
           <button
             onClick={updateUserProfileData}
@@ -143,14 +165,86 @@ const MyProfile = () => {
             Save
           </button>
         ) : (
-          <button
+          <>
+            <button
             onClick={() => setIsEdit(true)}
             className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
           >
             Edit Profile
           </button>
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Change Password
+          </button>
+          </>
         )}
       </div>
+
+      {/* ---------------------- MODAL START ---------------------- */}
+          {showModal && (
+            <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex justify-center items-center z-50">
+              <div className="bg-white p-6 rounded shadow-lg w-96">
+
+                <h3 className="text-lg font-semibold mb-4 text-center">
+                  Change Password
+                </h3>
+
+                <form onSubmit={handleSubmit} className="space-y-3">
+
+                  <input
+                    type="password"
+                    placeholder="Old Password"
+                    className="border p-2 w-full rounded"
+                    value={oldPassword}
+                    onChange={e => setOldPassword(e.target.value)}
+                    required
+                  />
+
+                  <input
+                    type="password"
+                    placeholder="Re-enter Old Password"
+                    className="border p-2 w-full rounded"
+                    value={reOldPassword}
+                    onChange={e => setReOldPassword(e.target.value)}
+                    required
+                  />
+
+                  <input
+                    type="password"
+                    placeholder="New Password"
+                    className="border p-2 w-full rounded"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    required
+                  />
+
+                  <div className="flex justify-end gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                      className="px-4 py-2 border rounded"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-600 text-white rounded"
+                    >
+                      Submit
+                    </button>
+                  </div>
+
+                </form>
+
+              </div>
+            </div>
+          )}
+          {/* ---------------------- MODAL END ---------------------- */}
+          
     </div>
   );
 };
