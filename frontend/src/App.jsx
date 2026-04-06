@@ -24,6 +24,7 @@ import DoctorAppointments from './pages/Doctor/DoctorAppointments'
 import DoctorPatient from './pages/Doctor/DoctorPatient'
 import DoctorProfile from './pages/Doctor/DoctorProfile'
 import Footer from './components/Footer'
+import Root from './pages/root'
 
 function App() {
 
@@ -51,6 +52,7 @@ function App() {
           <Route path='/login' element={<div className="flex items-center justify-center w-full"><Login /></div>} />
 
           {/* User Routes */}
+          <Route path='/' element={<Root />} />
           <Route path='/user/home' element={<Home />} />
           <Route path='/user/my-profile' element={<div className="flex items-center mx-20 w-full mb-20"><MyProfile /></div>} />
           <Route path='/user/my-appointments' element={<div className="flex items-center justify-center w-full mt-10 mb-20"><MyAppointments /></div>} />

@@ -32,10 +32,14 @@ const loginDoctor = async (req, res) => {
         }
 
         //compare password
-        const isMatch = await bcrypt.compare(password, doctor.password_hash)
+        // const isMatch = await bcrypt.compare(password, doctor.password_hash)
+        const isMatch = password === doctor.password_hash
+        console.log("doctor.password_hash:", doctor.password_hash);
+        console.log("entered password:", password);
+        console.log("isMatch:", isMatch);
 
         if (!isMatch) {
-            res.json({ success: false, message: "Invalid credentials1" })
+            res.json({ success: false, message: "Invalid credentials1 password not matching" })
         }
 
         //create jwt token
