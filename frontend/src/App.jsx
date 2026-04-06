@@ -24,7 +24,7 @@ import DoctorAppointments from './pages/Doctor/DoctorAppointments'
 import DoctorPatient from './pages/Doctor/DoctorPatient'
 import DoctorProfile from './pages/Doctor/DoctorProfile'
 import Footer from './components/Footer'
-import Root from './pages/root'
+import Root from './pages/Root'
 
 function App() {
 
