@@ -4,7 +4,7 @@ MediApp is a **full-stack doctor appointment booking platform** where patients c
 It is built using **React, Node.js, Express, and MySQL** and demonstrates a complete authentication and appointment management workflow.
 
 🌐 **Live Application:**
-https://mediappfrontend.onrender.com
+https://medi-app-client.vercel.app
 
 ---
 
